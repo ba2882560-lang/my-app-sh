@@ -1,142 +1,199 @@
+/* =====================
+   CLEAN IOS DESIGN FIX
+===================== */
+
+:root{
+  --bg1:#F5F6FA;
+  --bg2:#E8FFF8;
+  --bg3:#F3ECFF;
+
+  --mint:#00E6A7;
+  --purple:#B26BFF;
+
+  --text:#1C1C1E;
+  --sub:#8E8E93;
+
+  --shadow:0 12px 30px rgba(0,0,0,0.10);
+}
+
+/* BODY */
 body{
 margin:0;
 font-family:-apple-system, BlinkMacSystemFont, "SF Pro Display", Arial;
-background:linear-gradient(135deg,#f9f9fa,#dfe2e5);
-color:#161616;
+background:linear-gradient(135deg,var(--bg2),var(--bg1),var(--bg3));
+color:var(--text);
+-webkit-font-smoothing:antialiased;
+overflow-x:hidden;
 }
+
+/* =====================
+   SCREEN SYSTEM (FIXED)
+===================== */
 
 .screen{
 display:none;
-padding:25px;
+min-height:100vh;
+width:100%;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+padding:20px;
+gap:16px;
 text-align:center;
 }
 
 .screen.active{
 display:flex;
-flex-direction:column;
-align-items:center;
-gap:15px;
+animation:fade 0.25s ease;
 }
+
+@keyframes fade{
+from{opacity:0; transform:translateY(10px);}
+to{opacity:1; transform:translateY(0);}
+}
+
+/* =====================
+   HUB CARDS
+===================== */
+
+.hub-header h1{
+font-size:30px;
+font-weight:800;
+}
+
+.hub-header p{
+opacity:0.6;
+font-size:14px;
+}
+
+.hub-grid{
+display:flex;
+flex-direction:column;
+gap:15px;
+width:100%;
+align-items:center;
+}
+
+.hub-card{
+width:88%;
+background:rgba(255,255,255,0.85);
+backdrop-filter:blur(20px);
+border-radius:24px;
+padding:18px;
+box-shadow:var(--shadow);
+transition:0.2s;
+}
+
+.hub-card:active{
+transform:scale(0.97);
+}
+
+.hub-card .icon{
+font-size:30px;
+}
+
+/* =====================
+   CARD GENERAL
+===================== */
 
 .card{
-background:rgba(17, 17, 17, 0.6);
-backdrop-filter:blur(12px);
-padding:18px;
+background:rgba(255,255,255,0.75);
+backdrop-filter:blur(18px);
 border-radius:20px;
-width:250px;
-box-shadow:0 10px 30px rgba(0,0,0,0.08);
-border:1px solid rgba(255,255,255,0.4);
+padding:16px;
+width:85%;
+box-shadow:var(--shadow);
 }
 
-.card:hover{
-transform:translateY(-5px);
-}
-
-input,button{
-width:220px;
-padding:14px;
-border-radius:14px;
-border:none;
-outline:none;
-}
-
-input{
-background:rgba(255,255,255,0.08);
-color:#fff;
-}
+/* =====================
+   BUTTONS (FIXED)
+===================== */
 
 button{
+width:85%;
 padding:14px;
-border:none;
 border-radius:16px;
-width:220px;
-
-background:linear-gradient(135deg,#6366f1,#a5b4fc);
+border:none;
+background:linear-gradient(135deg,var(--mint),var(--purple));
 color:white;
-
-font-weight:600;
+font-weight:700;
 font-size:15px;
-
-cursor:pointer;
-transition:0.25s;
-box-shadow:0 8px 20px rgba(99,102,241,0.3);
-}
-
-button:hover{
-transform:translateY(-2px);
+transition:0.2s;
+box-shadow:0 10px 25px rgba(0,230,167,0.25);
 }
 
 button:active{
-transform:scale(0.96);
+transform:scale(0.97);
+opacity:0.9;
 }
 
-/* أزرار ثانوية */
-.secondary{
-background:#262627;
-color:#1e293b;
-box-shadow:none;
-}
+/* =====================
+   TIMER + TREE
+===================== */
 
-.bar{
-width:220px;
-height:10px;
-background:#1c1e20;
-border-radius:20px;
-overflow:hidden;
-margin-top:10px;
-}
-
-#barFill{
-height:100%;
-width:40%;
-background:linear-gradient(90deg,#6366f1,#22c55e);
-transition:0.4s;
-}
-
-h2{
+#timer{
+font-size:42px;
 font-weight:800;
-letter-spacing:0.5px;
-color:#0f0f0f;  
 }
-#aiTip{
-font-size:14px;
-opacity:0.85;
-margin-top:10px;
+
+#tree{
+font-size:52px;
 }
+
+/* =====================
+   NAV (ONLY ONE FIXED VERSION)
+===================== */
 
 .nav{
 position:fixed;
-bottom:15px;
+bottom:18px;
 left:50%;
 transform:translateX(-50%);
-background:rgba(0,0,0,0.4);
-backdrop-filter: blur(15px);
-padding:10px;
-border-radius:20px;
+background:rgba(255,255,255,0.75);
+backdrop-filter:blur(25px);
+padding:10px 18px;
+border-radius:25px;
 display:flex;
-gap:10px;
+gap:25px;
+box-shadow:var(--shadow);
 }
 
-.nav button{
-width:40px;
-padding:10px;
-border-radius:12px;
-background:transparent;
+.nav div{
+font-size:20px;
+opacity:0.6;
+transition:0.2s;
 }
 
-.level-btn{
-border-radius:20px;
-font-weight:bold;
+.nav div:active{
+transform:scale(1.1);
+opacity:1;
 }
 
-.easy{
-background:linear-gradient(135deg,#22c55e,#86efac);
+/* =====================
+   RESET MODE FIX
+===================== */
+
+#reset{
+background:linear-gradient(180deg,#1C1C1E,#121214);
+color:white;
 }
 
-.medium{
-background:linear-gradient(135deg,#f59e0b,#fcd34d);
+.relax-card{
+background:rgba(255,255,255,0.08);
+border-radius:18px;
+padding:15px;
+width:80%;
 }
 
-.hard{
-background:linear-gradient(135deg,#ef4444,#fca5a5);
+/* =====================
+   SMALL FIXES
+===================== */
+
+h1,h2{
+font-weight:800;
+}
+
+p{
+color:var(--sub);
+font-size:14px;
 }

@@ -1,112 +1,196 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Achieve your goal</title>
+<title> Glow Up ✨</title>
 
 <link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 
 <body>
 
-<!-- WELCOME -->
-<div id="welcome" class="screen active">
-<h2> مرحبا بك في تطبيق Achieve your goal  (حقق هدفك ) </h2>
-
-<p style="opacity:0.8; max-width:260px;">
-نساعدك في خفض استخدامك للسوشال ميديا ونبني عادات أفضل بطريقة بسيطة.
-</p>
-
-<button onclick="go('intro')">ابدأ</button>
+<!-- ================= SPLASH ================= -->
+<div id="splash" class="screen active">
+  <h1>Glow Up ✨</h1>
+  <p>ابدئي رحلتك</p>
 </div>
 
-<!-- INTRO -->
-<div id="intro" class="screen">
-<h2> كيف يعمل التطبيق؟</h2>
+<!-- ================= HUB ================= -->
+<div id="home" class="screen active hub">
 
-<p style="opacity:0.8; max-width:260px;">
-نقيس استخدامك → نعطيك نتيجة → ثم تحديات يومية بسيطة تساهم في توازن استخدامك للسوشال ميديا 
-</p>
+  <div class="hub-header">
+    <h1>Glow Up ✨</h1>
+    <p>اختاري نظامك</p>
+  </div>
 
-<button onclick="go('home')">فهمت، نبدأ</button>
+  <div class="hub-grid">
+
+    <div class="hub-card" onclick="go('focus')">
+      <div class="icon">🌱</div>
+      <h3>نظام النمو</h3>
+      <p>وقت + تركيز + شجرة تنمو</p>
+    </div>
+
+    <div class="hub-card" onclick="startQuiz(); go('quiz')">
+      <div class="icon">🔥</div>
+      <h3>نظام الستريك</h3>
+      <p>اختبار + تحديات + XP</p>
+    </div>
+
+    <div class="hub-card" onclick="go('reset')">
+      <div class="icon">🌙</div>
+      <h3>نظام الراحة</h3>
+      <p>هدوء + تنفس + أصوات</p>
+    </div>
+
+  </div>
+
 </div>
 
-<!-- HOME -->
-<div id="home" class="screen">
-<h2> ابدأ</h2>
+<!-- ================= FOCUS TIMER ================= -->
+<div id="focus" class="screen">
 
-<input id="name" placeholder="اسمك">
+  <h2>نظام النمو 🌱</h2>
 
-<button onclick="startApp()">دخول</button>
+  <p id="selected">اختاري الوقت</p>
+
+  <div id="timer">00:00</div>
+
+  <div id="tree">🌱</div>
+
+  <div class="time-buttons">
+
+    <button onclick="setTime(1)">1 دقيقة</button>
+    <button onclick="setTime(10)">10 دقائق</button>
+    <button onclick="setTime(30)">30 دقيقة</button>
+    <button onclick="setTime(60)">1 ساعة</button>
+
+  </div>
+
+  <button onclick="startTimer()">ابدأ</button>
+
 </div>
 
-<!-- QUIZ -->
+<!-- ================= REWARDS ================= -->
+<div id="rewards" class="screen">
+  <h2>إنجازاتك ⭐</h2>
+
+  <p id="points2">0 دقيقة</p>
+
+  <button onclick="go('home')">رجوع للرئيسية</button>
+</div>
+
+<!-- ================= STREAK HUB ================= -->
+<div id="streak" class="screen">
+
+  <h2>نظام الستريك 🔥</h2>
+
+  <p>اختبار + تحديات + تقدم</p>
+
+  <button onclick="go('quiz')">🧠 بدء الاختبار</button>
+
+  <div class="card">
+    <p>XP</p>
+    <h3 id="xpText">0</h3>
+  </div>
+
+  <div class="card">
+    <p>🔥 الستريك</p>
+    <h3 id="streakText">0</h3>
+  </div>
+
+  <button onclick="go('daily')">📅 التحديات اليومية</button>
+
+</div>
+
+<!-- ================= QUIZ ================= -->
 <div id="quiz" class="screen">
-<h2>🧠 اختبار مقياس بسيط</h2>
 
-<p id="qText"></p>
-<button onclick="answer(1)">أوافق بشدة</button>
-<button onclick="answer(0.5)">أوافق</button>
-<button onclick="answer(0)">محايد</button>
-<button onclick="answer(-0.5)">لا أوافق</button>
-<button onclick="answer(-1)">لا أوافق بشدة</button>
+  <h2>🧠 الاختبار</h2>
+
+  <p id="qText">السؤال</p>
+
+  <button onclick="answer(1)">أوافق بشدة</button>
+  <button onclick="answer(0.5)">أوافق</button>
+  <button onclick="answer(0)">محايد</button>
+  <button onclick="answer(-0.5)">لا أوافق</button>
+  <button onclick="answer(-1)">لا أوافق بشدة</button>
+
 </div>
 
-<!-- RESULT -->
+<!-- ================= RESULT ================= -->
+
 <div id="result" class="screen">
-<h2> نتيجتك</h2>
 
-<p id="resultText"></p>
-<p id="aiTip" style="opacity:0.8"></p>
+  <h2>📊 النتيجة</h2>
 
-<button onclick="go('dashboard')">التالي</button>
+  <p id="resultText"></p>
+
+  <p id="aiTip"></p>
+
+  <button onclick="go('upgrade')">هل تريدين التطور؟</button>
+
 </div>
 
-<!-- DASHBOARD -->
-<div id="dashboard" class="screen">
-<h2> لوحة التحكم</h2>
+<div id="upgrade" class="screen">
 
-<div class="card">
-<p> XP</p>
-<h3 id="xpText">0</h3>
+  <h2>🚀 التطوير</h2>
+
+  <p>هل تريدين تحويل نتيجتك إلى تحديات؟</p>
+
+  <button onclick="go('challenges')">نعم</button>
+
+  <button onclick="go('home')">لاحقاً</button>
+
 </div>
 
-<div class="card">
-<p> المستوى</p>
-<h3 id="levelText">1</h3>
+
+<!-- ================= DAILY CHALLENGE ================= -->
+<div id="challenges" class="screen">
+
+  <h2>🎯 التحديات</h2>
+
+  <p id="missionText"></p>
+
+  <button onclick="completeChallenge()">✔ تم الإنجاز</button>
+
+</div>
+<!-- ================= RESET MODE ================= -->
+<div id="reset" class="screen">
+
+  <h2>🌙 وضع الراحة</h2>
+
+  <p class="sub">خذي وقتك… بدون ضغط</p>
+
+  <div class="relax-card">
+    <div class="emoji">🌧</div>
+    <p>صوت المطر</p>
+    <button onclick="playRain()">تشغيل</button>
+  </div>
+
+  <div class="relax-card">
+    <div class="emoji">☕</div>
+    <p>صوت كافيه</p>
+    <button onclick="playCafe()">تشغيل</button>
+  </div>
+
+  <div class="relax-card">
+    <div class="emoji">🫁</div>
+    <p>تمرين تنفس</p>
+    <button onclick="breathing()">ابدئي</button>
+  </div>
+
+  <button onclick="go('home')">رجوع</button>
+
 </div>
 
-<div class="card">
-<p>🔥 الستريك</p>
-<h3 id="streakText">0</h3>
-</div>
-
-<button onclick="go('daily')">ابدأ التحدي اليومي</button>
-</div>
-
-<!-- DAILY -->
-<div id="daily" class="screen">
-<h2>📅 تحدي اليوم</h2>
-
-<p>اختاري مستوى يومك:</p>
-
-<button onclick="chooseLevel('easy')">🟢 سهل</button>
-<button onclick="chooseLevel('medium')">🟡 متوسط</button>
-<button onclick="chooseLevel('hard')">🔴 صعب</button>
-</div>
-
-<!-- CHALLENGE -->
-<div id="challenge" class="screen">
-<h2>🎯 التحدي</h2>
-
-<p id="missionText"></p>
-<p id="aiText"></p>
-<button onclick="completeTask()">✔ تم الإنجاز</button>
-<button onclick="go('dashboard')" style="opacity:0.6">
-رجوع
-</button>
+<!-- ================= NAV ================= -->
+<div class="nav">
+  <div onclick="go('home')">🏠</div>
+  <div onclick="go('focus')">🌱</div>
+  <div onclick="go('streak')">🔥</div>
+  <div onclick="go('reset')">🌙</div>
 </div>
 
 <script src="script.js"></script>

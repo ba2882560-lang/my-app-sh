@@ -1,132 +1,340 @@
-let user = "";
-let xp = 0;
-let level = 1;
-let streak = 0;
-let lastDay = null;
-let dailyDone = false;
-let behaviorScore = 0;
-let answersCount = 0;
-let i = 0;
+// =====================
+// GROWTH SYSTEM 🌱
+// =====================
 
-// ===== SOUNDS =====
-const clickSound = new Audio("https://actions.google.com/sounds/v1/cartoon/pop.ogg");
-const successSound = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
+let selectedTime = Number(localStorage.getItem("selectedTime")) || 1;
+let seconds = Number(localStorage.getItem("seconds")) || selectedTime * 60;
+let interval = null;
+let progress = Number(localStorage.getItem("progress")) || 0;
+let isRunning = false;
 
-// ===== QUESTIONS =====
-const questions = [
-    "أستخدم السوشال ميديا كثير يوميًا",
-    "أتوتر من التفاعل الواقعي مع الاخرين",
-    "أفضل التواصل في السوشال على الواقع",
-    "أشعر بالخوف اثناء جوابي في الحصه",
-    "أفضل قضاء نهاية الاسبوع في المنزل واستخدام السوشال ميديا طوال اليوم",
+// اختيار الوقت
+function setTime(t){
+  selectedTime = t;
+  seconds = t * 60;
+
+  localStorage.setItem("selectedTime", selectedTime);
+  localStorage.setItem("seconds", seconds);
+
+  document.getElementById("selected").textContent = "مدة: " + t + " دقيقة";
+  document.getElementById("timer").textContent = formatTime(seconds);
+  updateTree();
+}
+
+// بدء التايمر
+function startTimer(){
+
+  if(isRunning) return;
+  isRunning = true;
+
+  interval = setInterval(() => {
+
+    seconds--;
+
+    localStorage.setItem("seconds", seconds);
+
+    document.getElementById("timer").textContent = formatTime(seconds);
+
+    // نسبة التقدم
+    let total = selectedTime * 60;
+    progress = total - seconds;
+
+    localStorage.setItem("progress", progress);
+
+    updateTree();
+
+    if(seconds <= 0){
+      finishTimer();
+    }
+
+  }, 1000);
+}
+
+// إنهاء
+function finishTimer(){
+  clearInterval(interval);
+  isRunning = false;
+
+  progress = selectedTime * 60;
+  localStorage.setItem("progress", progress);
+
+  updateTree();
+
+  alert("🔥 أنجزتي الجلسة!");
+}
+
+// تحويل الوقت
+function formatTime(sec){
+  let m = Math.floor(sec / 60);
+  let s = sec % 60;
+
+  return String(m).padStart(2,"0") + ":" + String(s).padStart(2,"0");
+}
+
+// نمو الشجرة
+function updateTree(){
+
+  let tree = document.getElementById("tree");
+  if(!tree) return;
+
+  let total = selectedTime * 60;
+
+  let ratio = progress / total;
+
+  if(ratio <= 0.2){
+    tree.textContent = "🌱";
+  }
+  else if(ratio <= 0.5){
+    tree.textContent = "🌿";
+  }
+  else if(ratio < 1){
+    tree.textContent = "🌳";
+  }
+  else{
+    tree.textContent = "🌳✨";
+  }
+}
+
+// استرجاع الحالة بعد فتح الصفحة
+window.addEventListener("load", () => {
+
+  if(localStorage.getItem("selectedTime")){
+    selectedTime = Number(localStorage.getItem("selectedTime"));
+  }
+
+  if(localStorage.getItem("seconds")){
+    seconds = Number(localStorage.getItem("seconds"));
+  }
+
+  if(localStorage.getItem("progress")){
+    progress = Number(localStorage.getItem("progress"));
+  }
+
+  document.getElementById("selected").textContent = "مدة: " + selectedTime + " دقيقة";
+  document.getElementById("timer").textContent = formatTime(seconds);
+
+  updateTree();
+});
+
+// =====================
+// STREAK SYSTEM 🔥
+// =====================
+
+let questions = [
+  "أستخدم السوشال ميديا كثير",
+  "أتوتر بدون جوالي",
+  "أقارن نفسي بالآخرين"
 ];
 
+let index = 0;
+let score = 0;
+
+let streak = Number(localStorage.getItem("streak")) || 0;
+let xp = Number(localStorage.getItem("xp")) || 0;
+
+let currentLevel = "";
+
+// =====================
+// QUIZ
+// =====================
+
+function startQuiz(){
+  index = 0;
+  score = 0;
+  showQuestion();
+  go("quiz");
+}
+
+function showQuestion(){
+  document.getElementById("qText").textContent = questions[index];
+}
+
+function answer(val){
+  score += val;
+  index++;
+
+  if(index < questions.length){
+    showQuestion();
+  } else {
+    finishQuiz();
+  }
+}
+
+// =====================
+// RESULT + CLASSIFICATION
+// =====================
+
+function finishQuiz(){
+
+  let resultText = "";
+  let level = "";
+
+  if(score <= 0){
+    resultText = "🟢 تأثير منخفض";
+    level = "low";
+  }
+  else if(score <= 2){
+    resultText = "🟠 تأثير متوسط";
+    level = "medium";
+  }
+  else{
+    resultText = "🔴 تأثير عالي";
+    level = "high";
+  }
+
+  currentLevel = level;
+
+  document.getElementById("resultText").textContent = resultText;
+  document.getElementById("aiTip").textContent = "تم تحليل سلوكك";
+
+  go("result");
+}
+
+// =====================
+// CHALLENGES BY LEVEL
+// =====================
+
 const challenges = {
-    easy: ["لا تستخدمي السوشال ميديا 10 دقائق", "حاولي القيام بهواية جديده كرسم مثلا", "اقضي يوم مع العائلة دون استخدام السوشال ميديا"],
-    medium: ["لا تستخدمي السوشال ميديا لمدة 30دقيقة اليوم", "ناقشي المعلمه عن موضوع الدرس امام طالبات الصف", "القي فقره ضمن فقرات الاذاعة المدرسيه اليوميه"],
-    hard: ["اقضي اليوم دون استخدام برامج التواصل", "اخرجي للمشي ساعه كامله دون الجوال", "اذهبي للتنزه مع احد الصديقات دون استخدام السوشال ميديا"]
+  low: [
+    "اقرئي 10 دقائق بدون جوال",
+    "اكتبي هدفك لليوم"
+  ],
+  medium: [
+    "ابتعدي عن السوشال 30 دقيقة",
+    "امشي بدون جوال"
+  ],
+  high: [
+    "يوم كامل بدون سوشال",
+    "جلسة هدوء بدون هاتف 1 ساعة"
+  ]
 };
 
-// ===== START =====
-function startApp() {
-    let nameInput = document.getElementById("name").value;
-    if (!nameInput) return alert("اكتبي الاسم");
-    user = nameInput;
-    save();
-    go("quiz");
-    showQ();
+// =====================
+// MOVE TO CHALLENGES
+// =====================
+
+function loadChallenge(){
+
+  let list = challenges[currentLevel];
+  let task = list[Math.floor(Math.random() * list.length)];
+
+  document.getElementById("missionText").textContent = task;
 }
 
-function showQ() {
-    document.getElementById("qText").textContent = questions[i];
-    clickSound.play();
+// =====================
+// COMPLETE CHALLENGE
+// =====================
+
+function completeChallenge(){
+
+  xp += 20;
+  streak += 1;
+
+  localStorage.setItem("xp", xp);
+  localStorage.setItem("streak", streak);
+
+  alert("🔥 +20 XP | ستريك زاد");
+
+  go("home");
 }
 
-function answer(val) {
-    // حساب النقاط بناءً على القيمة المرسلة من الأزرار (1، 0.5، إلخ)
-    if (val >= 0.5) {
-        if (i === 0 || i === 2 || i === 4) {
-            behaviorScore++;
-        } else {
-            answersCount++;
-        }
+// =====================
+// NAV HELP
+// =====================
+
+function go(page){
+  document.querySelectorAll(".screen")
+    .forEach(s => s.classList.remove("active"));
+
+  document.getElementById(page).classList.add("active");
+
+  if(page === "challenges"){
+    loadChallenge();
+  }
     }
+
+    // =====================
+// RESET / RELAX SYSTEM 🌙
+// =====================
+
+// أصوات
+const rainSound = new Audio("https://actions.google.com/sounds/v1/weather/rain.ogg");
+const cafeSound = new Audio("https://actions.google.com/sounds/v1/ambiences/crowd_bar.ogg");
+
+rainSound.loop = true;
+cafeSound.loop = true;
+
+let currentSound = null;
+
+// =====================
+// SOUNDS
+// =====================
+
+function stopAllSounds(){
+  rainSound.pause();
+  cafeSound.pause();
+
+  rainSound.currentTime = 0;
+  cafeSound.currentTime = 0;
+}
+
+function playRain(){
+  stopAllSounds();
+  rainSound.play();
+  currentSound = "rain";
+}
+
+function playCafe(){
+  stopAllSounds();
+  cafeSound.play();
+  currentSound = "cafe";
+}
+
+// =====================
+// BREATHING MODE
+// =====================
+
+function breathing(){
+
+  let msg = document.createElement("div");
+
+  msg.style.position = "fixed";
+  msg.style.top = "50%";
+  msg.style.left = "50%";
+  msg.style.transform = "translate(-50%, -50%)";
+  msg.style.padding = "20px";
+  msg.style.background = "rgba(0,0,0,0.6)";
+  msg.style.color = "white";
+  msg.style.borderRadius = "20px";
+  msg.style.textAlign = "center";
+  msg.style.zIndex = "9999";
+
+  document.body.appendChild(msg);
+
+  let steps = [
+    "شهيق…",
+    "حبس النفس…",
+    "زفير…",
+    "كرري"
+  ];
+
+  let i = 0;
+
+  let interval = setInterval(() => {
+
+    msg.textContent = steps[i];
 
     i++;
 
-    if (i < questions.length) {
-        showQ(); // عرض السؤال التالي
-    } else {
-        finishQuiz();
+    if(i >= steps.length){
+      i = 0;
     }
-}
 
-function ai() {
-    if (behaviorScore >= 3) return "استخدامك عالي جداً للسوشال ميديا، خففيه تدريجياً لراحتك.";
-    if (answersCount >= 1) return "استخدامك متوسط، لكن تذكري أن التوازن سيقلل من توترك.";
-    return "أنتِ رائعة وتوازنك ممتاز! حافظي على هذا المستوى.";
-}
+  }, 2000);
 
-function finishQuiz() {
-    let finalResult = behaviorScore >= 3 ? "تأثير مرتفع" : "تأثير منخفض";
-    document.getElementById("resultText").textContent = finalResult;
-    document.getElementById("aiTip").textContent = ai();
-    go("result");
+  // يوقف بعد 20 ثانية
+  setTimeout(() => {
+    clearInterval(interval);
+    msg.remove();
+  }, 20000);
 }
-
-function chooseLevel(levelType) {
-    let list = challenges[levelType];
-    let task = list[Math.floor(Math.random() * list.length)];
-    
-    localStorage.setItem("selectedLevel", levelType);
-    document.getElementById("missionText").textContent = task;
-    document.getElementById("aiText").textContent = getAiTip(levelType);
-    
-    go("challenge");
-}
-
-function getAiTip(levelType) {
-    if (levelType === "easy") return "يوم هادي ممتاز 👍";
-    if (levelType === "medium") return "توازن جميل 🔥";
-    if (levelType === "hard") return "أداء قوي جدًا 🏆";
-    return "";
-}
-
-function completeTask() {
-    xp += 20;
-    save();
-    updateDashboard();
-    
-    if (typeof confetti === "function") {
-        confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
-    }
-    
-    successSound.play();
-    alert("🔥 عزيمتك رائعه +20 XP");
-    
-    setTimeout(() => { go('dashboard'); }, 2000);
-}
-
-// ===== UTILS =====
-function go(id) {
-    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
-}
-
-function updateDashboard() {
-    document.getElementById("xpText").textContent = xp;
-    document.getElementById("levelText").textContent = level;
-    document.getElementById("streakText").textContent = streak;
-}
-
-function save() {
-    localStorage.setItem("user", user);
-    localStorage.setItem("xp", xp);
-}
-
-window.onload = function() {
-    xp = Number(localStorage.getItem("xp")) || 0;
-    user = localStorage.getItem("user") || "";
-    if(user) document.getElementById("name").value = user;
-    updateDashboard();
-};
