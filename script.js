@@ -25,17 +25,29 @@ function setTime(t){
 function startTimer(){
 
   if(isRunning) return;
+
   isRunning = true;
 
+  let btn = document.getElementById("startBtn");
+  if(btn) btn.style.display = "none";
+
   interval = setInterval(() => {
+
+    if(seconds <= 0){
+      finishTimer();
+      return;
+    }
 
     seconds--;
 
     localStorage.setItem("seconds", seconds);
 
-    document.getElementById("timer").textContent = formatTime(seconds);
+    let timerEl = document.getElementById("timer");
+    if(timerEl){
+      timerEl.textContent = formatTime(seconds);
+    }
 
-    // نسبة التقدم
+    // التقدم
     let total = selectedTime * 60;
     progress = total - seconds;
 
@@ -43,17 +55,18 @@ function startTimer(){
 
     updateTree();
 
-    if(seconds <= 0){
-      finishTimer();
-    }
-
   }, 1000);
 }
 
 // إنهاء
+
 function finishTimer(){
+
   clearInterval(interval);
   isRunning = false;
+
+  let btn = document.getElementById("startBtn");
+  if(btn) btn.style.display = "block";
 
   progress = selectedTime * 60;
   localStorage.setItem("progress", progress);
@@ -63,11 +76,9 @@ function finishTimer(){
   alert("🔥 أنجزتي الجلسة!");
 }
 
-// تحويل الوقت
 function formatTime(sec){
   let m = Math.floor(sec / 60);
   let s = sec % 60;
-
   return String(m).padStart(2,"0") + ":" + String(s).padStart(2,"0");
 }
 
@@ -114,14 +125,17 @@ window.addEventListener("load", () => {
   document.getElementById("timer").textContent = formatTime(seconds);
 
   updateTree();
+
+  updateDailyStreak();   // 🔥
+
 });
+
 
 // =====================
 // STREAK SYSTEM 🔥
 // =====================
 
 let questions = [
-  "أستخدم السوشال ميديا كثيرا وافضلها على الخروج من المنزل في عطلة  نهاية الاسبوع ",
  "أستخدم السوشال ميديا كثيرا وافضلها على الخروج من المنزل في عطلة  نهاية الاسبوع ",
   "لا استطيع تكوين علاقات اجتماعيه في الواقع ",
   "أشعر بالوحدة رغم استخدامي لوسائل التواصل باستمرار "
@@ -216,8 +230,22 @@ const challenges = {
 
 function loadChallenge(){
 
+  let today = new Date().toDateString();
+  let savedDay = localStorage.getItem("challengeDay");
+
+  // إذا نفس اليوم → رجع نفس التحدي
+  if(savedDay === today){
+    document.getElementById("missionText").textContent =
+      localStorage.getItem("todayChallenge");
+    return;
+  }
+
   let list = challenges[currentLevel];
   let task = list[Math.floor(Math.random() * list.length)];
+
+  // حفظ التحدي لليوم
+  localStorage.setItem("todayChallenge", task);
+  localStorage.setItem("challengeDay", today);
 
   document.getElementById("missionText").textContent = task;
 }
@@ -238,6 +266,34 @@ function completeChallenge(){
 
   go("home");
 }
+function updateStreakUI(){
+  document.getElementById("xpText").textContent = xp;
+  document.getElementById("streakText").textContent = streak;
+}
+
+function updateDailyStreak(){
+
+  let today = new Date().toDateString();
+  let lastDay = localStorage.getItem("lastDay");
+
+  if(lastDay === today) return;
+
+  if(lastDay){
+    let diff = new Date(today) - new Date(lastDay);
+    let days = diff / (1000 * 60 * 60 * 24);
+
+    if(days === 1){
+      streak += 1;
+    } else {
+      streak = 1; // رجع من البداية
+    }
+  } else {
+    streak = 1;
+  }
+
+  localStorage.setItem("streak", streak);
+  localStorage.setItem("lastDay", today);
+}
 
 // =====================
 // NAV HELP
@@ -252,7 +308,11 @@ function go(page){
   if(page === "challenges"){
     loadChallenge();
   }
-    }
+
+  if(page === "streak"){
+    updateStreakUI(); // 🔥 تحديث مباشر
+  }
+}
 
     // =====================
 // RESET / RELAX SYSTEM 🌙

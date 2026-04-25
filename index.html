@@ -43,7 +43,7 @@
       <h3>نظام الراحة</h3>
       <p>هدوء + تنفس + أصوات</p>
     </div>
-
+    <button id="startBtn" onclick="startTimer()">ابدأ</button>
   </div>
 
 </div>
@@ -55,7 +55,8 @@
 
   <p id="selected">اختاري الوقت</p>
 
-  <div id="timer">00:00</div>
+
+<div id="timer">00:00</div>
 
   <div id="tree">🌱</div>
 
@@ -67,8 +68,8 @@
     <button onclick="setTime(60)">1 ساعة</button>
 
   </div>
+    <button onclick="startTimer()">ابدأ</button>
 
-  <button onclick="startTimer()">ابدأ</button>
 
 </div>
 
@@ -78,18 +79,14 @@
 
   <p id="points2">0 دقيقة</p>
 
-  <button onclick="go('home')">رجوع للرئيسية</button>
 </div>
 
 <!-- ================= STREAK HUB ================= -->
 <div id="streak" class="screen">
 
-  <h2>نظام الستريك 🔥</h2>
+  <h2>🔥 نظام الستريك</h2>
 
-  <p>اختبار + تحديات + تقدم</p>
-
-  <button onclick="go('quiz')">🧠 بدء الاختبار</button>
-
+  <!-- 📊 Dashboard -->
   <div class="card">
     <p>XP</p>
     <h3 id="xpText">0</h3>
@@ -100,7 +97,9 @@
     <h3 id="streakText">0</h3>
   </div>
 
-  <button onclick="go('daily')">📅 التحديات اليومية</button>
+  <!-- 🎯 Actions -->
+  <button onclick="startQuiz()">🧠 بدء الاختبار</button>
+  <button onclick="go('challenges')">🎯 التحديات</button>
 
 </div>
 
@@ -181,7 +180,6 @@
     <button onclick="breathing()">ابدئي</button>
   </div>
 
-  <button onclick="go('home')">رجوع</button>
 
 </div>
 
